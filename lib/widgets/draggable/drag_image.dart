@@ -12,8 +12,8 @@ class DragImage extends StatefulWidget {
     {this.path, 
     this.url, 
     this.initPos,
-    this.width = 50,
-    this.height = 50,
+    this.width = 150,
+    this.height = 150,
   }) : super();
 
   @override
@@ -31,45 +31,49 @@ class DragImageState extends State<DragImage> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: Draggable(
-        child: Container(
-          padding: EdgeInsets.all(12),
-          child: widget.path == null 
-            ? Image.network(
-                widget.url,
-                width: widget.width,
-                height: widget.height,
-              )
-            : Image.file(
-                widget.path,
-                width: widget.width,
-                height: widget.height,
-              ),
-        ),
-        onDraggableCanceled: (velocity, offset) {
-          setState(() {
-            position = Offset(offset.dx, offset.dy - 94);
-          });
-        },
-        childWhenDragging: SizedBox(),
-        feedback: Container(
-          padding: EdgeInsets.all(12),
-          child: widget.path == null 
-            ? Image.network(
-                widget.url,
-                width: widget.width,
-                height: widget.height,
-              )
-            : Image.file(
-                widget.path,
-                width: widget.width,
-                height: widget.height,
-              ),
-        ),
-      )
-    );
+    try {
+      return Positioned(
+        left: position.dx,
+        top: position.dy,
+        child: Draggable(
+          child: Container(
+            padding: EdgeInsets.all(12),
+            child: widget.path == null 
+              ? Image.network(
+                  widget.url,
+                  width: widget.width,
+                  height: widget.height,
+                )
+              : Image.file(
+                  widget.path,
+                  width: widget.width,
+                  height: widget.height,
+                ),
+          ),
+          onDraggableCanceled: (velocity, offset) {
+            setState(() {
+              position = Offset(offset.dx, offset.dy - 94);
+            });
+          },
+          childWhenDragging: SizedBox(),
+          feedback: Container(
+            padding: EdgeInsets.all(12),
+            child: widget.path == null 
+              ? Image.network(
+                  widget.url,
+                  width: widget.width,
+                  height: widget.height,
+                )
+              : Image.file(
+                  widget.path,
+                  width: widget.width,
+                  height: widget.height,
+                ),
+          ),
+        )
+      );
+    } catch (e) {
+      return throw e; 
+    }
   }
 }

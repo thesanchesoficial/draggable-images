@@ -1,13 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-
 import 'package:draggable/models/models.dart';
 import 'package:draggable/theme/app_theme.dart';
 import 'package:draggable/widgets/widgets.dart';
-
-import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,17 +31,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int indexSelecionado;
-  Color pickerColor;
+  Color pickerColor = Color(0xffffb6b0);
   File file;
   var pickedFile;
   final picker = ImagePicker();
+  TextEditingController linkImagem = TextEditingController();
 
   List<Widget> draggableItems = [
     DragText(
       "Peça de qualquer\nlugar", 
-      fontSize: 40,
+      fontSize: 37,
       fontWeight: FontWeight.bold,
-      initPos: Offset(50.0, 0.0)
+      initPos: Offset(30.0, 90.0)
+    ),
+    DragText(
+      "Do celular ou computador", 
+      fontSize: 18,
+      fontWeight: FontWeight.w300,
+      initPos: Offset(30.0, 195.0)
     ),
   ];
 
@@ -231,6 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _modalImagem() {
+    Navigator.pop(context);
     _openBottomSheet(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -246,9 +249,36 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             icon: Icon(EvaIcons.link2Outline), 
-            onPressed: () {}
+            onPressed: _modalImagemLink
           ),
         ],
+      ),
+      title: "Imagem"
+    );
+  }
+
+  _modalImagemLink() {
+    Navigator.pop(context);
+    _openBottomSheet(
+      child: MSTextField.withSuffix(
+        controller: linkImagem,
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        labelText: "Link da imagem",
+        icon: Icon(EvaIcons.plusCircleOutline),
+        onPressedSuffix: () {
+          try {
+            draggableItems.add(
+              DragImage(
+                url: linkImagem.text,
+                initPos: Offset(0, 0),
+              ),
+            );
+            Navigator.pop(context);
+          } catch (e) {
+            // "erro"
+          }
+          linkImagem.clear();
+        },
       ),
       title: "Imagem"
     );
@@ -411,7 +441,6 @@ class _MyHomePageState extends State<MyHomePage> {
           initPos: Offset(0, 0),
         ),
       );
-      Navigator.pop(context);
       Navigator.pop(context);
       setState(() {});
     }
