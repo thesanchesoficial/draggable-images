@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
-class DragText extends StatefulWidget {
+class DragTextEntity {
   final Offset initPos;
   final String text;
   final TextAlign textAlign;
@@ -10,71 +11,98 @@ class DragText extends StatefulWidget {
   final FontWeight fontWeight;
   final double letterSpacing;
 
-  DragText(
-    this.text, 
-    {this.initPos, 
-    this.textAlign = TextAlign.left, 
-    this.textDirection = TextDirection.ltr, 
-    this.fontSize = 15, 
-    this.color = Colors.black, 
-    this.fontWeight = FontWeight.normal, 
-    this.letterSpacing = 1
-  }) : super();
+  DragTextEntity({
+    this.initPos,
+    this.text,
+    this.textAlign,
+    this.textDirection,
+    this.fontSize,
+    this.color,
+    this.fontWeight,
+    this.letterSpacing,
+  });
 
   @override
-  DragTextState createState() => DragTextState();
-}
+  String toString() {
+    return 'DragText(initPos: $initPos, text: $text, textAlign: $textAlign, textDirection: $textDirection, fontSize: $fontSize, color: $color, fontWeight: $fontWeight, letterSpacing: $letterSpacing)';
+  }
 
-class DragTextState extends State<DragText> {
-  Offset position = Offset(0.0, 0.0);
+  Map<String, dynamic> toMap() {
+    return {
+      'initPos': initPos,
+      'text': text,
+      'textAlign': textAlign,
+      'textDirection': textDirection,
+      'fontSize': fontSize,
+      'color': color.value,
+      'fontWeight': fontWeight,
+      'letterSpacing': letterSpacing,
+    };
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    position = widget.initPos;
+  factory DragTextEntity.fromMap(Map<String, dynamic> map) {
+    return DragTextEntity(
+      initPos: map['initPos'],
+      text: map['text'],
+      textAlign: map['textAlign'],
+      textDirection: map['textDirection'],
+      fontSize: map['fontSize'],
+      color: Color(map['color']),
+      fontWeight: map['fontWeight'],
+      letterSpacing: map['letterSpacing'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory DragTextEntity.fromJson(String source) => DragTextEntity.fromMap(json.decode(source));
+
+  DragTextEntity copyWith({
+    Offset initPos,
+    String text,
+    TextAlign textAlign,
+    TextDirection textDirection,
+    double fontSize,
+    Color color,
+    FontWeight fontWeight,
+    double letterSpacing,
+  }) {
+    return DragTextEntity(
+      initPos: initPos ?? this.initPos,
+      text: text ?? this.text,
+      textAlign: textAlign ?? this.textAlign,
+      textDirection: textDirection ?? this.textDirection,
+      fontSize: fontSize ?? this.fontSize,
+      color: color ?? this.color,
+      fontWeight: fontWeight ?? this.fontWeight,
+      letterSpacing: letterSpacing ?? this.letterSpacing,
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: Draggable(
-        child: Container(
-          padding: EdgeInsets.all(12),
-          child: Text(
-            widget.text,
-            textAlign: widget.textAlign,
-            textDirection: widget.textDirection,
-            style: TextStyle(
-              fontSize: widget.fontSize,
-              color: widget.color,
-              fontWeight: widget.fontWeight,
-              letterSpacing: widget.letterSpacing
-            ),
-          ),
-        ),
-        onDraggableCanceled: (velocity, offset) {
-          setState(() {
-            position = Offset(offset.dx, offset.dy - 94);
-          });
-        },
-        childWhenDragging: SizedBox(),
-        feedback: Container(
-          padding: EdgeInsets.all(12),
-          child: Text(
-            widget.text,
-            textAlign: widget.textAlign,
-            textDirection: widget.textDirection,
-            style: TextStyle(
-              fontSize: widget.fontSize,
-              color: widget.color,
-              fontWeight: widget.fontWeight,
-              letterSpacing: widget.letterSpacing
-            ),
-          ),
-        ),
-      )
-    );
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is DragTextEntity &&
+      other.initPos == initPos &&
+      other.text == text &&
+      other.textAlign == textAlign &&
+      other.textDirection == textDirection &&
+      other.fontSize == fontSize &&
+      other.color == color &&
+      other.fontWeight == fontWeight &&
+      other.letterSpacing == letterSpacing;
+  }
+
+  @override
+  int get hashCode {
+    return initPos.hashCode ^
+      text.hashCode ^
+      textAlign.hashCode ^
+      textDirection.hashCode ^
+      fontSize.hashCode ^
+      color.hashCode ^
+      fontWeight.hashCode ^
+      letterSpacing.hashCode;
   }
 }

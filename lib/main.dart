@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:draggable/widgets/draggable/drag_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:draggable/models/models.dart';
 import 'package:draggable/theme/app_theme.dart';
@@ -6,6 +8,7 @@ import 'package:draggable/widgets/widgets.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,6 +22,14 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
+      // builder: Nuvigator(
+      //   screenType: cupertinoDialogScreenType,
+      //   inheritableObservers: [
+      //     () => TestObserver(),
+      //   ],
+      //   router: SamplesRouter(),
+      //   initialRoute: SamplesRoutes.home,
+      // ),
       home: MyHomePage(),
     );
   }
@@ -29,6 +40,8 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+dynamic editWidget;
+
 class _MyHomePageState extends State<MyHomePage> {
   int indexSelecionado;
   Color pickerColor = Color(0xffffb6b0);
@@ -36,20 +49,25 @@ class _MyHomePageState extends State<MyHomePage> {
   var pickedFile;
   final picker = ImagePicker();
   TextEditingController linkImagem = TextEditingController();
+  TextEditingController dragTextController = TextEditingController();
 
   List<Widget> draggableItems = [
-    DragText(
-      "Peça de qualquer\nlugar", 
-      fontSize: 37,
-      fontWeight: FontWeight.bold,
-      initPos: Offset(30.0, 90.0)
+    DragWidget.text(
+      dragText: DragTextEntity(
+        text: "Peça de qualquer\nlugar",
+        fontSize: 37,
+        fontWeight: FontWeight.bold,
+      ),
+      position: Offset(30.0, 90.0)
     ),
-    DragText(
-      "Do celular ou computador", 
-      fontSize: 18,
-      fontWeight: FontWeight.w300,
-      initPos: Offset(30.0, 195.0)
-    ),
+    DragWidget.text(
+      dragText: DragTextEntity(
+        text: "Do celular ou computador",
+        fontSize: 18,
+        fontWeight: FontWeight.w300,
+      ),
+      position: Offset(30.0, 195.0)
+    )
   ];
 
   @override
@@ -75,24 +93,28 @@ class _MyHomePageState extends State<MyHomePage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         alignment: Alignment.topCenter,
-        child: Row(
+        child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  color: Theme.of(context).accentColor
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 1,
+                      color: Theme.of(context).accentColor
+                    ),
+                    color: pickerColor
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width,
+                  alignment: Alignment.topCenter,
+                  child: Center(
+                    child: Stack(
+                      children: draggableItems,
+                    )
+                  ),
                 ),
-                color: pickerColor
-              ),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width,
-              alignment: Alignment.topCenter,
-              child: Center(
-                child: Stack(
-                  children: draggableItems,
-                )
-              ),
+              ],
             ),
           ],
         ),
@@ -148,9 +170,11 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.pop(context);
               setState(() {
                 draggableItems.add(
-                  DragText(
-                    "Clique em editar",
-                    initPos: Offset(0, 0),
+                  DragWidget.text(
+                    dragText: DragTextEntity(
+                      text: "Clique em editar",
+                    ),
+                    position: Offset(0, 0),
                   )
                 );
               });
@@ -163,6 +187,95 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _modalEditar() {
+    if(editWidget is DragTextEntity) {
+      return _modalEditarText();
+    } else if(editWidget is DragImageEntity) {
+      return _modalEditarImage();
+    } else {
+      print("selecione um widget");
+      // selecione um widget
+    }
+  }
+
+  _modalEditarText() {
+    dragTextController.text = editWidget.text;
+    _openBottomSheet(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.format_align_left_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_align_center_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_align_right_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_align_justify_outlined), 
+                onPressed: () {}
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.format_underline_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_bold_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_italic_outlined), 
+                onPressed: () {}
+              ),
+              IconButton(
+                icon: Icon(Icons.format_size_outlined), 
+                onPressed: () {}
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.format_line_spacing_outlined), 
+                onPressed: () {}
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          MSTextField(
+            controller: dragTextController,
+            maxLines: 10,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            onChanged: (value) {
+              setState(() {
+                editWidget.text = value;
+              });
+            }
+          )
+        ],
+      ),
+      title: "Editar"
+    );
+  }
+
+  _modalEditarImage() {
     _openBottomSheet(
       child: Column(
         children: [
@@ -266,18 +379,18 @@ class _MyHomePageState extends State<MyHomePage> {
         labelText: "Link da imagem",
         icon: Icon(EvaIcons.plusCircleOutline),
         onPressedSuffix: () {
-          try {
-            draggableItems.add(
-              DragImage(
-                url: linkImagem.text,
-                initPos: Offset(0, 0),
-              ),
-            );
-            Navigator.pop(context);
-          } catch (e) {
-            // "erro"
-          }
-          linkImagem.clear();
+          // try {
+          //   draggableItems.add(
+          //     DragImage(
+          //       url: linkImagem.text,
+          //       initPos: Offset(0, 0),
+          //     ),
+          //   );
+          //   Navigator.pop(context);
+          // } catch (e) {
+          //   // "erro"
+          // }
+          // linkImagem.clear();
         },
       ),
       title: "Imagem"
@@ -321,14 +434,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Text("${index+1}"),
                     ),
                   ),
-                  Text(
-                    "${draggableItems[index] is DragText 
-                      ? "Texto"
-                      : draggableItems[index] is DragImage
-                        ? "Imagem"
-                        : "Pincel"
-                    }"
-                  ),
+                  // Text(
+                  //   "${draggableItems[index] is DragText 
+                  //     ? "Texto"
+                  //     : draggableItems[index] is DragImage
+                  //       ? "Imagem"
+                  //       : "Pincel"
+                  //   }"
+                  // ),
                 ],
               ),
               trailing: Icon(Icons.edit),
@@ -434,15 +547,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (pickedFile == null) {
       // erro
     } else {
-      file = File(pickedFile.path);
-      draggableItems.add(
-        DragImage(
-          path: file,
-          initPos: Offset(0, 0),
-        ),
-      );
-      Navigator.pop(context);
-      setState(() {});
+      // file = File(pickedFile.path);
+      // draggableItems.add(
+      //   DragImage(
+      //     path: file,
+      //     initPos: Offset(0, 0),
+      //   ),
+      // );
+      // Navigator.pop(context);
+      // setState(() {});
     }
   }
 }

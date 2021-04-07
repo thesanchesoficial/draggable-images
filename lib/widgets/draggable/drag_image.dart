@@ -1,79 +1,64 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-class DragImage extends StatefulWidget {
+class DragImageEntity {
   final Offset initPos;
   final File path;
   final String url;
   final double width;
   final double height;
 
-  DragImage(
-    {this.path, 
-    this.url, 
+  DragImageEntity({
     this.initPos,
-    this.width = 150,
-    this.height = 150,
-  }) : super();
+    this.path,
+    this.url,
+    this.width,
+    this.height,
+  });
 
-  @override
-  DragImageState createState() => DragImageState();
-}
+  Map<String, dynamic> toMap() {
+    return {
+      'initPos': initPos,
+      'path': path,
+      'url': url,
+      'width': width,
+      'height': height,
+    };
+  }
 
-class DragImageState extends State<DragImage> {
-  Offset position = Offset(0.0, 0.0);
+  factory DragImageEntity.fromMap(Map<String, dynamic> map) {
+    return DragImageEntity(
+      initPos: map['initPos'],
+      path: map['path'],
+      url: map['url'],
+      width: map['width'],
+      height: map['height'],
+    );
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    position = widget.initPos;
+  String toJson() => json.encode(toMap());
+
+  factory DragImageEntity.fromJson(String source) => DragImageEntity.fromMap(json.decode(source));
+
+  DragImageEntity copyWith({
+    Offset initPos,
+    File path,
+    String url,
+    double width,
+    double height,
+  }) {
+    return DragImageEntity(
+      initPos: initPos ?? this.initPos,
+      path: path ?? this.path,
+      url: url ?? this.url,
+      width: width ?? this.width,
+      height: height ?? this.height,
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
-    try {
-      return Positioned(
-        left: position.dx,
-        top: position.dy,
-        child: Draggable(
-          child: Container(
-            padding: EdgeInsets.all(12),
-            child: widget.path == null 
-              ? Image.network(
-                  widget.url,
-                  width: widget.width,
-                  height: widget.height,
-                )
-              : Image.file(
-                  widget.path,
-                  width: widget.width,
-                  height: widget.height,
-                ),
-          ),
-          onDraggableCanceled: (velocity, offset) {
-            setState(() {
-              position = Offset(offset.dx, offset.dy - 94);
-            });
-          },
-          childWhenDragging: SizedBox(),
-          feedback: Container(
-            padding: EdgeInsets.all(12),
-            child: widget.path == null 
-              ? Image.network(
-                  widget.url,
-                  width: widget.width,
-                  height: widget.height,
-                )
-              : Image.file(
-                  widget.path,
-                  width: widget.width,
-                  height: widget.height,
-                ),
-          ),
-        )
-      );
-    } catch (e) {
-      return throw e; 
-    }
+  String toString() {
+    return 'DragImageEntity(initPos: $initPos, path: $path, url: $url, width: $width, height: $height)';
   }
 }
