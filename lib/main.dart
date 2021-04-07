@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController linkImagem = TextEditingController();
   TextEditingController dragTextController = TextEditingController();
 
-  List<Widget> draggableItems = [
+  List<DragWidget> draggableItems = [
     DragWidget.text(
       dragText: DragTextEntity(
         text: "Peça de qualquer\nlugar",
@@ -264,9 +264,15 @@ class _MyHomePageState extends State<MyHomePage> {
             maxLines: 10,
             margin: EdgeInsets.symmetric(horizontal: 20),
             onChanged: (value) {
-              setState(() {
-                editWidget.text = value;
+              draggableItems.forEach((element) {
+                var teste = DragWidget.text(
+                  dragText: element.dragText.copyWith(
+                    text: "fgfgf"
+                  )
+                );
+                element = teste;
               });
+              setState(() {});
             }
           )
         ],

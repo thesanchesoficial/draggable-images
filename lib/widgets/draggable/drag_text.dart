@@ -40,6 +40,28 @@ class DragTextEntity {
     };
   }
 
+  // DragTextEntity copyWith({
+  //   Offset initPos,
+  //   String text,
+  //   TextAlign textAlign,
+  //   TextDirection textDirection,
+  //   double fontSize,
+  //   Color color,
+  //   FontWeight fontWeight,
+  //   double letterSpacing,
+  // }) {
+  //   return DragTextEntity(
+  //     initPos: initPos ?? this.initPos,
+  //     text: text ?? this.text,
+  //     textAlign: textAlign ?? this.textAlign,
+  //     textDirection: textDirection ?? this.textDirection,
+  //     fontSize: fontSize ?? this.fontSize,
+  //     color: color ?? this.color,
+  //     fontWeight: fontWeight ?? this.fontWeight,
+  //     letterSpacing: letterSpacing ?? this.letterSpacing,
+  //   );
+  // }
+
   factory DragTextEntity.fromMap(Map<String, dynamic> map) {
     return DragTextEntity(
       initPos: map['initPos'],
